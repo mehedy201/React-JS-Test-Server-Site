@@ -11,12 +11,19 @@ app.use(express.json());
 
 
 
-const uri = `mongodb+srv://${process.env.DB_USERR}:${process.env.DB_PASS}@cluster0.oheyy.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.MongoDB_User}:${process.env.MongoDB_Pass}@cluster0.oheyy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run () {
     try{
         await client.connect();
-        const wholeSaleShopCollectionUser = client.db('ReactJS_Test_India').collection('StudentLIst');
+        const studentCollection = client.db('ReactJS').collection('student-list');
+
+         // Post Data get from client site
+        app.post('/student-list', async(req, res) => {
+            const student = req.body;
+            const result = await studentCollection.insertOne(student);
+            res.send({success: true, result});
+        })
     }
     finally{
 
