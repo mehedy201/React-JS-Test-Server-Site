@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // MiddleWare ----------
 app.use(cors());
@@ -23,7 +23,23 @@ async function run () {
             const student = req.body;
             const result = await studentCollection.insertOne(student);
             res.send({success: true, result});
-        })
+        });
+
+        // Get Data From Server ----------
+        app.get('/student-lists', async(req, res) => {
+            const query ={};
+            const cursor = studentCollection.find(query);
+            const allStudent = await cursor.toArray();
+            res.send(allStudent);
+          });
+
+        //Get single Student List ------------
+        app.get('/student-lists/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const student = await studentCollection.findOne(query);
+            res.send(student);
+          })
     }
     finally{
 
